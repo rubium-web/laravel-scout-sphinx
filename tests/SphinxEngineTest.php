@@ -7,33 +7,35 @@ use Constantable\SphinxScout\Tests\Model\SearchableModel;
 use Foolz\SphinxQL\Drivers\ResultSet;
 use Foolz\SphinxQL\SphinxQL;
 
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Collection;
+use Illuminate\Database\Eloquent\Model;
 use Laravel\Scout\Builder;
 
-use Mockery as m;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Mockery as m;
 use Mockery\MockInterface;
 use stdClass;
 
-class SphinxEngineTest extends MockeryTestCase{
-
+class SphinxEngineTest extends MockeryTestCase
+{
     /**
      * @var Model
      */
     private $model;
 
-    protected function tearDown(): void{
-		parent::tearDown();
-		m::close();
-	}
+    protected function tearDown(): void
+    {
+        parent::tearDown();
+        m::close();
+    }
 
-	protected function setUp(): void{
-		parent::setUp();
-		$this->model = new SearchableModel(['id' => 1, 'title' => 'Some text']);
-	}
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->model = new SearchableModel(['id' => 1, 'title' => 'Some text']);
+    }
 
-	public function test_update_adds_objects_to_index()
+    public function test_update_adds_objects_to_index()
     {
         $client = m::mock(SphinxQL::class);
 
@@ -95,7 +97,8 @@ class SphinxEngineTest extends MockeryTestCase{
                 },
                 function ($arg) use ($expression) {
                     return $expression->value() === $arg->value();
-                })
+                }
+            )
             ->andReturn($thisObject = m::mock(SphinxQL::class));
 
         $thisObject->shouldReceive('limit')->once()
@@ -120,10 +123,10 @@ class SphinxEngineTest extends MockeryTestCase{
     {
         $client = m::mock(SphinxQL::class);
         $engine = new SphinxEngine($client);
-		/**@var Model|MockInterface $model*/
+        /** @var Model|MockInterface $model */
         $model = m::mock(stdClass::class);
         $model->shouldReceive('getScoutModelsByIds')->once()->andReturn($models = Collection::make([
-            $this->model
+            $this->model,
         ]));
         $builder = m::mock(Builder::class);
         $resultSet = m::mock(ResultSet::class);
@@ -139,7 +142,7 @@ class SphinxEngineTest extends MockeryTestCase{
     {
         $client = m::mock(SphinxQL::class);
         $engine = new SphinxEngine($client);
-		/**@var Model|MockInterface $model*/
+        /** @var Model|MockInterface $model */
         $model = m::mock(stdClass::class);
         $model->shouldReceive('getScoutModelsByIds')->andReturn($models = Collection::make([
             new SearchableModel(['id' => 1, 'title' => 'Some text']),
@@ -155,7 +158,7 @@ class SphinxEngineTest extends MockeryTestCase{
             ['id' => 1, 'title' => 'Some text'],
             ['id' => 2, 'title' => 'Some text 2'],
             ['id' => 3, 'title' => 'Some text 3'],
-            ['id' => 4, 'title' => 'Some text 4']
+            ['id' => 4, 'title' => 'Some text 4'],
         ]);
         $resultSet->shouldReceive('count')->andReturn($count = 4);
         $results = $engine->map($builder, $resultSet, $model);
@@ -166,7 +169,7 @@ class SphinxEngineTest extends MockeryTestCase{
             0 => ['id' => 1, 'title' => 'Some text'],
             1 => ['id' => 2, 'title' => 'Some text 2'],
             2 => ['id' => 3, 'title' => 'Some text 3'],
-            3 => ['id' => 4, 'title' => 'Some text 4']
+            3 => ['id' => 4, 'title' => 'Some text 4'],
         ], $results->toArray());
     }
 

@@ -13,7 +13,6 @@ use Laravel\Scout\Searchable;
 
 class SphinxEngine extends AbstractEngine
 {
-
     /**
      * @var SphinxQL
      */
@@ -41,7 +40,7 @@ class SphinxEngine extends AbstractEngine
             return;
         }
         $models->each(function ($model) {
-            if (!empty($searchableData = $model->toSearchableArray())) {
+            if (! empty($searchableData = $model->toSearchableArray())) {
                 if (isset($model->isRT)) { // Only RT indexes support replace
                     $index = $model->searchableAs();
                     $searchableData['id'] = (int)$model->getKey();
@@ -128,7 +127,8 @@ class SphinxEngine extends AbstractEngine
         $objectIdPositions = array_flip($objectIds);
 
         return $model->getScoutModelsByIds(
-            $builder, $objectIds
+            $builder,
+            $objectIds
         )->filter(static function (/** @var Searchable $model */ $model) use ($objectIds) {
             return in_array($model->getScoutKey(), $objectIds, false);
         })->sortBy(static function (/** @var Searchable $model */ $model) use ($objectIdPositions) {
@@ -155,7 +155,8 @@ class SphinxEngine extends AbstractEngine
         $objectIdPositions = array_flip($objectIds);
 
         return $model->queryScoutModelsByIds(
-            $builder, $objectIds
+            $builder,
+            $objectIds
         )->cursor()->filter(function (/** @var Searchable $model */ $model) use ($objectIds) {
             return in_array($model->getScoutKey(), $objectIds, false);
         })->sortBy(function (/** @var Searchable $model */ $model) use ($objectIdPositions) {
@@ -262,7 +263,7 @@ class SphinxEngine extends AbstractEngine
      */
     public function addWhereIn(string $attribute, array $arrayIn)
     {
-        $this->whereIns[] = array($attribute => $arrayIn);
+        $this->whereIns[] = [$attribute => $arrayIn];
     }
 
     /**

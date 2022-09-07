@@ -7,7 +7,6 @@ use Laravel\Scout\Searchable;
 
 class SearchableModel extends Model
 {
-
 //    use Searchable;
 
     /**
